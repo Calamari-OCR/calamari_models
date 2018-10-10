@@ -1,0 +1,2 @@
+model_checkpoint_path: "/mnt/lizardfs/scratch/Datensets_Bildverarbeitung/OCR/fraktur/models/bin_best/4.ckpt"
+all_model_checkpoint_paths: "/mnt/lizardfs/scratch/Datensets_Bildverarbeitung/OCR/fraktur/models/bin_best/4.ckpt"
