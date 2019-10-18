@@ -1,2 +1,0 @@
-model_checkpoint_path: "/mnt/lizardfs/scratch/Datensets_Bildverarbeitung/OCR/GT4HistOCR/mixed_fraktur_old/models/4.ckpt"
-all_model_checkpoint_paths: "/mnt/lizardfs/scratch/Datensets_Bildverarbeitung/OCR/GT4HistOCR/mixed_fraktur_old/models/4.ckpt"
