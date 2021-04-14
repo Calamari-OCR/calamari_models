@@ -8,7 +8,7 @@ Pretrained mixed models to be used with Calamari.
 - *fraktur19* is based on the DTA19 sub set of the GT4HistOCR corpus; and other Fraktur19 data; see [here](https://github.com/Calamari-OCR/calamari_models/issues/3#issuecomment-609730690) for further details
 - *uw3-modern-english* (formerly *antiqua_modern*) was trained on the [UW3 dataset](http://www.tmbdev.net/ocrdata-split/) (link seems to be down)
 - *idiotikon* originated from a cooperation with [Schweizerisches Idiotikon](https://www.idiotikon.ch/) in an effort to OCR the entire dictionary. The model is based on the UW3 model and its codec contains a wide variety of mostly Latin-based characters including many diacritics. Consequently, it may be a good choice to recognize many modern languages.
-- *18th_century_french* was trained in cooperation with the [MiMoText](https://www.mimotext.uni-trier.de/aktuelles/english) project of the University of Trier.
+- *18th_century_french* was trained in cooperation with the [MiMoText](https://www.mimotext.uni-trier.de/aktuelles/english) project of the University of Trier. It is based on double-keyed transcriptions of french novels published between 1750 and 1800. 
 - *historical_french* used data from 17/18/19. century French printings collected by [Simon Gabay](https://www.unine.ch/ilf/home/equipe-enseignante/gabay_simon.html)
 
 ## General comments
