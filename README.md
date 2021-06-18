@@ -18,7 +18,7 @@ Pretrained mixed models to be used with Calamari.
 
 
 ## Future work
-We are planning to considerably increase the number of available models in the somewhat near future (probably starting from mid october), including more time-specific models and spezialized or at least more robust models regarding different binarization techniques.
+We are planning to considerably increase the number of available models in the somewhat near future, including more time-specific models and spezialized or at least more robust models regarding different binarization techniques.
 Furthermore, a student work (hopefully) will deal with the task of training various models for modern scripts and languages using (mainly) synthetic data.
 
 If you want to contribute your own models or have any questions / model requests please don't hesitate to contact us.
