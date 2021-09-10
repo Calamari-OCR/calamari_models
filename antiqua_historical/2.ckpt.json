@@ -1,987 +1,1040 @@
 {
-  "model": {
-    "network": {
+  "scenario": {
+    "debug_graph_n_examples": 1,
+    "print_eval_limit": 10,
+    "tensorboard_logger_history_size": 5,
+    "export_serve": true,
+    "model": {
       "layers": [
         {
+          "name": "conv2d_0",
           "filters": 40,
-          "kernelSize": {
+          "kernel_size": {
             "x": 3,
-            "y": 3
+            "y": 3,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
+          "strides": {
             "x": 1,
-            "y": 1
-          }
-        },
-        {
-          "type": "MAX_POOLING",
-          "kernelSize": {
-            "x": 2,
-            "y": 2
+            "y": 1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
-            "x": 2,
-            "y": 2
-          }
+          "padding": "same",
+          "activation": "relu",
+          "__cls__": "calamari_ocr.ocr.model.layers.conv2d:Conv2DLayerParams"
         },
         {
+          "name": "maxpool2d_0",
+          "pool_size": {
+            "x": 2,
+            "y": 2,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "strides": {
+            "x": -1,
+            "y": -1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "padding": "same",
+          "__cls__": "calamari_ocr.ocr.model.layers.pool2d:MaxPool2DLayerParams"
+        },
+        {
+          "name": "conv2d_1",
           "filters": 60,
-          "kernelSize": {
+          "kernel_size": {
             "x": 3,
-            "y": 3
+            "y": 3,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
+          "strides": {
             "x": 1,
-            "y": 1
-          }
-        },
-        {
-          "type": "MAX_POOLING",
-          "kernelSize": {
-            "x": 2,
-            "y": 2
+            "y": 1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
-            "x": 2,
-            "y": 2
-          }
+          "padding": "same",
+          "activation": "relu",
+          "__cls__": "calamari_ocr.ocr.model.layers.conv2d:Conv2DLayerParams"
         },
         {
-          "type": "LSTM",
-          "hiddenNodes": 200
+          "name": "maxpool2d_1",
+          "pool_size": {
+            "x": 2,
+            "y": 2,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "strides": {
+            "x": -1,
+            "y": -1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "padding": "same",
+          "__cls__": "calamari_ocr.ocr.model.layers.pool2d:MaxPool2DLayerParams"
+        },
+        {
+          "name": "lstm_0",
+          "hidden_nodes": 200,
+          "merge_mode": "concat",
+          "__cls__": "calamari_ocr.ocr.model.layers.bilstm:BiLSTMLayerParams"
+        },
+        {
+          "name": "dropout_0",
+          "rate": 0.5,
+          "__cls__": "calamari_ocr.ocr.model.layers.dropout:DropoutLayerParams"
         }
       ],
-      "solver": "ADAM_SOLVER",
-      "dropout": 0.5,
-      "features": 48,
       "classes": 183,
-      "backend": {
-        "cudnn": true,
-        "randomSeed": 2,
-        "shuffleBufferSize": 1000
+      "ctc_merge_repeated": true,
+      "ensemble": 0,
+      "masking_mode": false,
+      "__cls__": "calamari_ocr.ocr.model.params:ModelParams"
+    },
+    "data": {
+      "pre_proc": {
+        "run_parallel": true,
+        "num_threads": -1,
+        "max_tasks_per_process": 250,
+        "processors": [
+          {
+            "modes": [
+              "training",
+              "prediction",
+              "evaluation"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.data_range_normalizer:DataRangeProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "prediction",
+              "evaluation"
+            ],
+            "extra_params": [
+              4,
+              1.0,
+              0.3
+            ],
+            "line_height": 48,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.center_normalizer:CenterNormalizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "prediction",
+              "evaluation"
+            ],
+            "normalize": true,
+            "invert": true,
+            "transpose": true,
+            "pad": 16,
+            "pad_value": false,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.final_preparation:FinalPreparationProcessorParams"
+          },
+          {
+            "modes": [
+              "training"
+            ],
+            "augmenter": {
+              "__cls__": "calamari_ocr.ocr.augmentation.data_augmenter:DefaultDataAugmenterParams"
+            },
+            "n_augmentations": 0,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.augmentation:AugmentationProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation"
+            ],
+            "unicode_normalization": "NFC",
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_normalizer:TextNormalizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation"
+            ],
+            "replacements": [
+              {
+                "old": "\u00b5",
+                "new": "\u03bc",
+                "regex": false
+              },
+              {
+                "old": "\u2013\u2014\u2014",
+                "new": "-",
+                "regex": false
+              },
+              {
+                "old": "\u2013\u2014",
+                "new": "-",
+                "regex": false
+              },
+              {
+                "old": "\"",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "`",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u201c",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201d",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u00b4",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u2018",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u2019",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u201c",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201d",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201c",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201e",
+                "new": ",,",
+                "regex": false
+              },
+              {
+                "old": "\u2026",
+                "new": "...",
+                "regex": false
+              },
+              {
+                "old": "\u2032",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u2033",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u2034",
+                "new": "'''",
+                "regex": false
+              },
+              {
+                "old": "\u3003",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u2160",
+                "new": "I",
+                "regex": false
+              },
+              {
+                "old": "\u2161",
+                "new": "II",
+                "regex": false
+              },
+              {
+                "old": "\u2162",
+                "new": "III",
+                "regex": false
+              },
+              {
+                "old": "\u2163",
+                "new": "IV",
+                "regex": false
+              },
+              {
+                "old": "\u2164",
+                "new": "V",
+                "regex": false
+              },
+              {
+                "old": "\u2165",
+                "new": "VI",
+                "regex": false
+              },
+              {
+                "old": "\u2166",
+                "new": "VII",
+                "regex": false
+              },
+              {
+                "old": "\u2167",
+                "new": "VIII",
+                "regex": false
+              },
+              {
+                "old": "\u2168",
+                "new": "IX",
+                "regex": false
+              },
+              {
+                "old": "\u2169",
+                "new": "X",
+                "regex": false
+              },
+              {
+                "old": "\u216a",
+                "new": "XI",
+                "regex": false
+              },
+              {
+                "old": "\u216b",
+                "new": "XII",
+                "regex": false
+              },
+              {
+                "old": "\u216c",
+                "new": "L",
+                "regex": false
+              },
+              {
+                "old": "\u216d",
+                "new": "C",
+                "regex": false
+              },
+              {
+                "old": "\u216e",
+                "new": "D",
+                "regex": false
+              },
+              {
+                "old": "\u216f",
+                "new": "M",
+                "regex": false
+              },
+              {
+                "old": "\u2170",
+                "new": "i",
+                "regex": false
+              },
+              {
+                "old": "\u2171",
+                "new": "ii",
+                "regex": false
+              },
+              {
+                "old": "\u2172",
+                "new": "iii",
+                "regex": false
+              },
+              {
+                "old": "\u2173",
+                "new": "iv",
+                "regex": false
+              },
+              {
+                "old": "\u2174",
+                "new": "v",
+                "regex": false
+              },
+              {
+                "old": "\u2175",
+                "new": "vi",
+                "regex": false
+              },
+              {
+                "old": "\u2176",
+                "new": "vii",
+                "regex": false
+              },
+              {
+                "old": "\u2177",
+                "new": "viii",
+                "regex": false
+              },
+              {
+                "old": "\u2178",
+                "new": "ix",
+                "regex": false
+              },
+              {
+                "old": "\u2179",
+                "new": "x",
+                "regex": false
+              },
+              {
+                "old": "\u217a",
+                "new": "xi",
+                "regex": false
+              },
+              {
+                "old": "\u217b",
+                "new": "xii",
+                "regex": false
+              },
+              {
+                "old": "\u217c",
+                "new": "l",
+                "regex": false
+              },
+              {
+                "old": "\u217d",
+                "new": "c",
+                "regex": false
+              },
+              {
+                "old": "\u217e",
+                "new": "d",
+                "regex": false
+              },
+              {
+                "old": "\u217f",
+                "new": "m",
+                "regex": false
+              },
+              {
+                "old": "\\s+(?u)",
+                "new": " ",
+                "regex": true
+              },
+              {
+                "old": "\\n(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "^\\s+(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "\\s+$(?u)",
+                "new": "",
+                "regex": true
+              }
+            ],
+            "rulesets": [
+              "spaces"
+            ],
+            "rulegroups": [],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_regularizer:TextRegularizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.basic_text_processors:StripTextProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "prediction",
+              "evaluation"
+            ],
+            "max_line_width": 4096,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.preparesample:PrepareSampleProcessorParams"
+          }
+        ],
+        "__cls__": "tfaip.data.pipeline.processor.params:SequentialProcessorPipelineParams"
       },
-      "ctcMergeRepeated": true,
-      "learningRate": 0.0010000000474974513,
-      "clippingNorm": 5.0
+      "post_proc": {
+        "run_parallel": true,
+        "num_threads": -1,
+        "max_tasks_per_process": 250,
+        "processors": [
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation",
+              "prediction"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.postprocessors.reshape:ReshapeOutputsProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation",
+              "prediction"
+            ],
+            "ctc_decoder_params": {
+              "type": "default",
+              "blank_index": 0,
+              "min_p_threshold": 0,
+              "non_word_chars": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "[",
+                "]",
+                "(",
+                ")",
+                "_",
+                ".",
+                ":",
+                ";",
+                "!",
+                "?",
+                "{",
+                "}",
+                "-",
+                "'",
+                "\""
+              ],
+              "dictionary": [],
+              "word_separator": " ",
+              "__cls__": "calamari_ocr.ocr.model.ctcdecoder.ctc_decoder:CTCDecoderParams"
+            },
+            "__cls__": "calamari_ocr.ocr.dataset.postprocessors.ctcdecoder:CTCDecoderProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation"
+            ],
+            "unicode_normalization": "NFC",
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_normalizer:TextNormalizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation"
+            ],
+            "replacements": [
+              {
+                "old": "\u00b5",
+                "new": "\u03bc",
+                "regex": false
+              },
+              {
+                "old": "\u2013\u2014\u2014",
+                "new": "-",
+                "regex": false
+              },
+              {
+                "old": "\u2013\u2014",
+                "new": "-",
+                "regex": false
+              },
+              {
+                "old": "\"",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "`",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u201c",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201d",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u00b4",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u2018",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u2019",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u201c",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201d",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201c",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u201e",
+                "new": ",,",
+                "regex": false
+              },
+              {
+                "old": "\u2026",
+                "new": "...",
+                "regex": false
+              },
+              {
+                "old": "\u2032",
+                "new": "'",
+                "regex": false
+              },
+              {
+                "old": "\u2033",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u2034",
+                "new": "'''",
+                "regex": false
+              },
+              {
+                "old": "\u3003",
+                "new": "''",
+                "regex": false
+              },
+              {
+                "old": "\u2160",
+                "new": "I",
+                "regex": false
+              },
+              {
+                "old": "\u2161",
+                "new": "II",
+                "regex": false
+              },
+              {
+                "old": "\u2162",
+                "new": "III",
+                "regex": false
+              },
+              {
+                "old": "\u2163",
+                "new": "IV",
+                "regex": false
+              },
+              {
+                "old": "\u2164",
+                "new": "V",
+                "regex": false
+              },
+              {
+                "old": "\u2165",
+                "new": "VI",
+                "regex": false
+              },
+              {
+                "old": "\u2166",
+                "new": "VII",
+                "regex": false
+              },
+              {
+                "old": "\u2167",
+                "new": "VIII",
+                "regex": false
+              },
+              {
+                "old": "\u2168",
+                "new": "IX",
+                "regex": false
+              },
+              {
+                "old": "\u2169",
+                "new": "X",
+                "regex": false
+              },
+              {
+                "old": "\u216a",
+                "new": "XI",
+                "regex": false
+              },
+              {
+                "old": "\u216b",
+                "new": "XII",
+                "regex": false
+              },
+              {
+                "old": "\u216c",
+                "new": "L",
+                "regex": false
+              },
+              {
+                "old": "\u216d",
+                "new": "C",
+                "regex": false
+              },
+              {
+                "old": "\u216e",
+                "new": "D",
+                "regex": false
+              },
+              {
+                "old": "\u216f",
+                "new": "M",
+                "regex": false
+              },
+              {
+                "old": "\u2170",
+                "new": "i",
+                "regex": false
+              },
+              {
+                "old": "\u2171",
+                "new": "ii",
+                "regex": false
+              },
+              {
+                "old": "\u2172",
+                "new": "iii",
+                "regex": false
+              },
+              {
+                "old": "\u2173",
+                "new": "iv",
+                "regex": false
+              },
+              {
+                "old": "\u2174",
+                "new": "v",
+                "regex": false
+              },
+              {
+                "old": "\u2175",
+                "new": "vi",
+                "regex": false
+              },
+              {
+                "old": "\u2176",
+                "new": "vii",
+                "regex": false
+              },
+              {
+                "old": "\u2177",
+                "new": "viii",
+                "regex": false
+              },
+              {
+                "old": "\u2178",
+                "new": "ix",
+                "regex": false
+              },
+              {
+                "old": "\u2179",
+                "new": "x",
+                "regex": false
+              },
+              {
+                "old": "\u217a",
+                "new": "xi",
+                "regex": false
+              },
+              {
+                "old": "\u217b",
+                "new": "xii",
+                "regex": false
+              },
+              {
+                "old": "\u217c",
+                "new": "l",
+                "regex": false
+              },
+              {
+                "old": "\u217d",
+                "new": "c",
+                "regex": false
+              },
+              {
+                "old": "\u217e",
+                "new": "d",
+                "regex": false
+              },
+              {
+                "old": "\u217f",
+                "new": "m",
+                "regex": false
+              },
+              {
+                "old": "\\s+(?u)",
+                "new": " ",
+                "regex": true
+              },
+              {
+                "old": "\\n(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "^\\s+(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "\\s+$(?u)",
+                "new": "",
+                "regex": true
+              }
+            ],
+            "rulesets": [
+              "spaces"
+            ],
+            "rulegroups": [],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_regularizer:TextRegularizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "targets",
+              "evaluation"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.basic_text_processors:StripTextProcessorParams"
+          }
+        ],
+        "__cls__": "tfaip.data.pipeline.processor.params:SequentialProcessorPipelineParams"
+      },
+      "resource_base_path": ".",
+      "skip_invalid_gt": true,
+      "input_channels": 1,
+      "downscale_factor": 4,
+      "line_height": 48,
+      "ensemble": 0,
+      "codec": {
+        "charset": [
+          "",
+          " ",
+          "&",
+          "'",
+          "(",
+          ")",
+          "*",
+          ",",
+          "-",
+          ".",
+          "/",
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          ":",
+          ";",
+          "?",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N",
+          "O",
+          "P",
+          "Q",
+          "R",
+          "S",
+          "T",
+          "U",
+          "V",
+          "W",
+          "X",
+          "Y",
+          "Z",
+          "[",
+          "]",
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n",
+          "o",
+          "p",
+          "q",
+          "r",
+          "s",
+          "t",
+          "u",
+          "v",
+          "w",
+          "x",
+          "y",
+          "z",
+          "\u00b6",
+          "\u00b7",
+          "\u00c0",
+          "\u00c6",
+          "\u00d2",
+          "\u00d3",
+          "\u00df",
+          "\u00e0",
+          "\u00e1",
+          "\u00e2",
+          "\u00e3",
+          "\u00e4",
+          "\u00e6",
+          "\u00e8",
+          "\u00e9",
+          "\u00ea",
+          "\u00eb",
+          "\u00ec",
+          "\u00ed",
+          "\u00ee",
+          "\u00f1",
+          "\u00f2",
+          "\u00f3",
+          "\u00f4",
+          "\u00f5",
+          "\u00f9",
+          "\u00fa",
+          "\u00fb",
+          "\u00fc",
+          "\u0111",
+          "\u0119",
+          "\u0129",
+          "\u0142",
+          "\u0153",
+          "\u0169",
+          "\u017f",
+          "\u0292",
+          "\u0301",
+          "\u0303",
+          "\u0391",
+          "\u0394",
+          "\u03a6",
+          "\u03ac",
+          "\u03ad",
+          "\u03ae",
+          "\u03af",
+          "\u03b1",
+          "\u03b2",
+          "\u03b3",
+          "\u03b4",
+          "\u03b5",
+          "\u03b6",
+          "\u03b7",
+          "\u03b8",
+          "\u03b9",
+          "\u03ba",
+          "\u03bb",
+          "\u03bc",
+          "\u03bd",
+          "\u03be",
+          "\u03bf",
+          "\u03c0",
+          "\u03c1",
+          "\u03c2",
+          "\u03c3",
+          "\u03c4",
+          "\u03c5",
+          "\u03c6",
+          "\u03c7",
+          "\u03c8",
+          "\u03c9",
+          "\u03ca",
+          "\u03cb",
+          "\u03cc",
+          "\u03cd",
+          "\u03ce",
+          "\u03d6",
+          "\u03df",
+          "\u1d10",
+          "\u1dd1",
+          "\u1dd3",
+          "\u1de3",
+          "\u1e9c",
+          "\u1ebd",
+          "\u1f00",
+          "\u1f10",
+          "\u1f41",
+          "\u1f74",
+          "\u1f78",
+          "\u1fe6",
+          "\u204a",
+          "\u2132",
+          "\u214e",
+          "\u2183",
+          "\u2184",
+          "\u2e17",
+          "\ua751",
+          "\ua753",
+          "\ua757",
+          "\ua758",
+          "\ua759",
+          "\ua75b",
+          "\ua75d",
+          "\ua770",
+          "\ua776"
+        ],
+        "__cls__": "calamari_ocr.ocr.dataset.codec:Codec"
+      },
+      "__cls__": "calamari_ocr.ocr.dataset.params:DataParams"
     },
-    "lineHeight": 48,
-    "dataPreprocessor": {
-      "type": "MULTI_NORMALIZER",
-      "children": [
-        {
-          "lineHeight": 48,
-          "pad": 16
-        }
-      ]
+    "evaluator": {
+      "__cls__": "tfaip.evaluator.params:EvaluatorParams"
     },
-    "textPreprocessor": {
-      "type": "MULTI_NORMALIZER",
-      "children": [
-        {
-          "type": "TEXT_NORMALIZER"
-        },
-        {
-          "type": "TEXT_REGULARIZER",
-          "replacements": [
-            {
-              "old": "\u00b5",
-              "new": "\u03bc"
-            },
-            {
-              "old": "\u2013\u2014\u2014",
-              "new": "-"
-            },
-            {
-              "old": "\u2013\u2014",
-              "new": "-"
-            },
-            {
-              "old": "\"",
-              "new": "''"
-            },
-            {
-              "old": "`",
-              "new": "'"
-            },
-            {
-              "old": "\u201c",
-              "new": "''"
-            },
-            {
-              "old": "\u201d",
-              "new": "''"
-            },
-            {
-              "old": "\u00b4",
-              "new": "'"
-            },
-            {
-              "old": "\u2018",
-              "new": "'"
-            },
-            {
-              "old": "\u2019",
-              "new": "'"
-            },
-            {
-              "old": "\u201c",
-              "new": "''"
-            },
-            {
-              "old": "\u201d",
-              "new": "''"
-            },
-            {
-              "old": "\u201c",
-              "new": "''"
-            },
-            {
-              "old": "\u201e",
-              "new": ",,"
-            },
-            {
-              "old": "\u2026",
-              "new": "..."
-            },
-            {
-              "old": "\u2032",
-              "new": "'"
-            },
-            {
-              "old": "\u2033",
-              "new": "''"
-            },
-            {
-              "old": "\u2034",
-              "new": "'''"
-            },
-            {
-              "old": "\u3003",
-              "new": "''"
-            },
-            {
-              "old": "\u2160",
-              "new": "I"
-            },
-            {
-              "old": "\u2161",
-              "new": "II"
-            },
-            {
-              "old": "\u2162",
-              "new": "III"
-            },
-            {
-              "old": "\u2163",
-              "new": "IV"
-            },
-            {
-              "old": "\u2164",
-              "new": "V"
-            },
-            {
-              "old": "\u2165",
-              "new": "VI"
-            },
-            {
-              "old": "\u2166",
-              "new": "VII"
-            },
-            {
-              "old": "\u2167",
-              "new": "VIII"
-            },
-            {
-              "old": "\u2168",
-              "new": "IX"
-            },
-            {
-              "old": "\u2169",
-              "new": "X"
-            },
-            {
-              "old": "\u216a",
-              "new": "XI"
-            },
-            {
-              "old": "\u216b",
-              "new": "XII"
-            },
-            {
-              "old": "\u216c",
-              "new": "L"
-            },
-            {
-              "old": "\u216d",
-              "new": "C"
-            },
-            {
-              "old": "\u216e",
-              "new": "D"
-            },
-            {
-              "old": "\u216f",
-              "new": "M"
-            },
-            {
-              "old": "\u2170",
-              "new": "i"
-            },
-            {
-              "old": "\u2171",
-              "new": "ii"
-            },
-            {
-              "old": "\u2172",
-              "new": "iii"
-            },
-            {
-              "old": "\u2173",
-              "new": "iv"
-            },
-            {
-              "old": "\u2174",
-              "new": "v"
-            },
-            {
-              "old": "\u2175",
-              "new": "vi"
-            },
-            {
-              "old": "\u2176",
-              "new": "vii"
-            },
-            {
-              "old": "\u2177",
-              "new": "viii"
-            },
-            {
-              "old": "\u2178",
-              "new": "ix"
-            },
-            {
-              "old": "\u2179",
-              "new": "x"
-            },
-            {
-              "old": "\u217a",
-              "new": "xi"
-            },
-            {
-              "old": "\u217b",
-              "new": "xii"
-            },
-            {
-              "old": "\u217c",
-              "new": "l"
-            },
-            {
-              "old": "\u217d",
-              "new": "c"
-            },
-            {
-              "old": "\u217e",
-              "new": "d"
-            },
-            {
-              "old": "\u217f",
-              "new": "m"
-            },
-            {
-              "old": "\\s+(?u)",
-              "new": " ",
-              "regex": true
-            },
-            {
-              "old": "\\n(?u)",
-              "regex": true
-            },
-            {
-              "old": "^\\s+(?u)",
-              "regex": true
-            },
-            {
-              "old": "\\s+$(?u)",
-              "regex": true
-            }
-          ]
-        },
-        {
-          "type": "STRIP_NORMALIZER"
-        }
-      ]
-    },
-    "textPostprocessor": {
-      "type": "MULTI_NORMALIZER",
-      "children": [
-        {
-          "type": "TEXT_NORMALIZER"
-        },
-        {
-          "type": "TEXT_REGULARIZER",
-          "replacements": [
-            {
-              "old": "\u00b5",
-              "new": "\u03bc"
-            },
-            {
-              "old": "\u2013\u2014\u2014",
-              "new": "-"
-            },
-            {
-              "old": "\u2013\u2014",
-              "new": "-"
-            },
-            {
-              "old": "\"",
-              "new": "''"
-            },
-            {
-              "old": "`",
-              "new": "'"
-            },
-            {
-              "old": "\u201c",
-              "new": "''"
-            },
-            {
-              "old": "\u201d",
-              "new": "''"
-            },
-            {
-              "old": "\u00b4",
-              "new": "'"
-            },
-            {
-              "old": "\u2018",
-              "new": "'"
-            },
-            {
-              "old": "\u2019",
-              "new": "'"
-            },
-            {
-              "old": "\u201c",
-              "new": "''"
-            },
-            {
-              "old": "\u201d",
-              "new": "''"
-            },
-            {
-              "old": "\u201c",
-              "new": "''"
-            },
-            {
-              "old": "\u201e",
-              "new": ",,"
-            },
-            {
-              "old": "\u2026",
-              "new": "..."
-            },
-            {
-              "old": "\u2032",
-              "new": "'"
-            },
-            {
-              "old": "\u2033",
-              "new": "''"
-            },
-            {
-              "old": "\u2034",
-              "new": "'''"
-            },
-            {
-              "old": "\u3003",
-              "new": "''"
-            },
-            {
-              "old": "\u2160",
-              "new": "I"
-            },
-            {
-              "old": "\u2161",
-              "new": "II"
-            },
-            {
-              "old": "\u2162",
-              "new": "III"
-            },
-            {
-              "old": "\u2163",
-              "new": "IV"
-            },
-            {
-              "old": "\u2164",
-              "new": "V"
-            },
-            {
-              "old": "\u2165",
-              "new": "VI"
-            },
-            {
-              "old": "\u2166",
-              "new": "VII"
-            },
-            {
-              "old": "\u2167",
-              "new": "VIII"
-            },
-            {
-              "old": "\u2168",
-              "new": "IX"
-            },
-            {
-              "old": "\u2169",
-              "new": "X"
-            },
-            {
-              "old": "\u216a",
-              "new": "XI"
-            },
-            {
-              "old": "\u216b",
-              "new": "XII"
-            },
-            {
-              "old": "\u216c",
-              "new": "L"
-            },
-            {
-              "old": "\u216d",
-              "new": "C"
-            },
-            {
-              "old": "\u216e",
-              "new": "D"
-            },
-            {
-              "old": "\u216f",
-              "new": "M"
-            },
-            {
-              "old": "\u2170",
-              "new": "i"
-            },
-            {
-              "old": "\u2171",
-              "new": "ii"
-            },
-            {
-              "old": "\u2172",
-              "new": "iii"
-            },
-            {
-              "old": "\u2173",
-              "new": "iv"
-            },
-            {
-              "old": "\u2174",
-              "new": "v"
-            },
-            {
-              "old": "\u2175",
-              "new": "vi"
-            },
-            {
-              "old": "\u2176",
-              "new": "vii"
-            },
-            {
-              "old": "\u2177",
-              "new": "viii"
-            },
-            {
-              "old": "\u2178",
-              "new": "ix"
-            },
-            {
-              "old": "\u2179",
-              "new": "x"
-            },
-            {
-              "old": "\u217a",
-              "new": "xi"
-            },
-            {
-              "old": "\u217b",
-              "new": "xii"
-            },
-            {
-              "old": "\u217c",
-              "new": "l"
-            },
-            {
-              "old": "\u217d",
-              "new": "c"
-            },
-            {
-              "old": "\u217e",
-              "new": "d"
-            },
-            {
-              "old": "\u217f",
-              "new": "m"
-            },
-            {
-              "old": "\\s+(?u)",
-              "new": " ",
-              "regex": true
-            },
-            {
-              "old": "\\n(?u)",
-              "regex": true
-            },
-            {
-              "old": "^\\s+(?u)",
-              "regex": true
-            },
-            {
-              "old": "\\s+$(?u)",
-              "regex": true
-            }
-          ]
-        },
-        {
-          "type": "STRIP_NORMALIZER"
-        }
-      ]
-    },
-    "codec": {
-      "charset": [
-        "",
-        " ",
-        "&",
-        "'",
-        "(",
-        ")",
-        "*",
-        ",",
-        "-",
-        ".",
-        "/",
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        ":",
-        ";",
-        "?",
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-        "[",
-        "]",
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "\u00b6",
-        "\u00b7",
-        "\u00c0",
-        "\u00c6",
-        "\u00d2",
-        "\u00d3",
-        "\u00df",
-        "\u00e0",
-        "\u00e1",
-        "\u00e2",
-        "\u00e3",
-        "\u00e4",
-        "\u00e6",
-        "\u00e8",
-        "\u00e9",
-        "\u00ea",
-        "\u00eb",
-        "\u00ec",
-        "\u00ed",
-        "\u00ee",
-        "\u00f1",
-        "\u00f2",
-        "\u00f3",
-        "\u00f4",
-        "\u00f5",
-        "\u00f9",
-        "\u00fa",
-        "\u00fb",
-        "\u00fc",
-        "\u0111",
-        "\u0119",
-        "\u0129",
-        "\u0142",
-        "\u0153",
-        "\u0169",
-        "\u017f",
-        "\u0292",
-        "\u0301",
-        "\u0303",
-        "\u0391",
-        "\u0394",
-        "\u03a6",
-        "\u03ac",
-        "\u03ad",
-        "\u03ae",
-        "\u03af",
-        "\u03b1",
-        "\u03b2",
-        "\u03b3",
-        "\u03b4",
-        "\u03b5",
-        "\u03b6",
-        "\u03b7",
-        "\u03b8",
-        "\u03b9",
-        "\u03ba",
-        "\u03bb",
-        "\u03bc",
-        "\u03bd",
-        "\u03be",
-        "\u03bf",
-        "\u03c0",
-        "\u03c1",
-        "\u03c2",
-        "\u03c3",
-        "\u03c4",
-        "\u03c5",
-        "\u03c6",
-        "\u03c7",
-        "\u03c8",
-        "\u03c9",
-        "\u03ca",
-        "\u03cb",
-        "\u03cc",
-        "\u03cd",
-        "\u03ce",
-        "\u03d6",
-        "\u03df",
-        "\u1d10",
-        "\u1dd1",
-        "\u1dd3",
-        "\u1de3",
-        "\u1e9c",
-        "\u1ebd",
-        "\u1f00",
-        "\u1f10",
-        "\u1f41",
-        "\u1f74",
-        "\u1f78",
-        "\u1fe6",
-        "\u204a",
-        "\u2132",
-        "\u214e",
-        "\u2183",
-        "\u2184",
-        "\u2e17",
-        "\ua751",
-        "\ua753",
-        "\ua757",
-        "\ua758",
-        "\ua759",
-        "\ua75b",
-        "\ua75d",
-        "\ua770",
-        "\ua776"
-      ]
-    }
+    "export_net_config": true,
+    "net_config_filename": "net_config.json",
+    "default_serve_dir": "serve",
+    "additional_serve_dir": "additional",
+    "trainer_params_filename": "trainer_params.json",
+    "scenario_params_filename": "scenario_params.json",
+    "scenario_base_path": null,
+    "scenario_id": null,
+    "id": null,
+    "tfaip_commit_hash": "7aff835269ee4614971cc751cdb47c00444f9af5",
+    "tfaip_version": "1.2.5",
+    "__cls__": "calamari_ocr.ocr.scenario_params:CalamariScenarioParams"
   },
-  "processes": 10,
-  "maxIters": 1000000,
-  "skipInvalidGt": true,
-  "display": 1000.0,
-  "statsSize": 100,
-  "batchSize": 5,
-  "outputDir": "/tmp/calamaribvnhu6ax/fold_2",
-  "iter": 23624,
-  "lossStats": [
-    2.595174789428711,
-    0.7195321321487427,
-    0.6763205528259277,
-    0.5753979682922363,
-    0.8264074325561523,
-    0.16636967658996582,
-    2.238590717315674,
-    0.9722539782524109,
-    1.3448810577392578,
-    2.2217319011688232,
-    0.8657412528991699,
-    0.8978986740112305,
-    1.6331905126571655,
-    0.21024498343467712,
-    0.44203680753707886,
-    2.259906768798828,
-    1.1015180349349976,
-    2.3744702339172363,
-    0.6250787973403931,
-    0.767584502696991,
-    0.27148863673210144,
-    0.4933083653450012,
-    3.524883270263672,
-    2.8132550716400146,
-    1.023130178451538,
-    0.7891110181808472,
-    2.9608945846557617,
-    2.3776447772979736,
-    1.1752127408981323,
-    0.30860161781311035,
-    1.176624059677124,
-    0.0694306269288063,
-    3.1239964962005615,
-    0.5768131017684937,
-    1.0648472309112549,
-    0.3843490183353424,
-    1.8288713693618774,
-    1.3291137218475342,
-    1.2485387325286865,
-    1.9866371154785156,
-    0.9130175709724426,
-    0.4108026623725891,
-    0.8347764015197754,
-    0.16650371253490448,
-    1.2755409479141235,
-    0.5650809407234192,
-    0.6454199552536011,
-    2.0932674407958984,
-    0.34757736325263977,
-    2.1623101234436035,
-    1.5439000129699707,
-    0.27028459310531616,
-    0.43906229734420776,
-    1.1579828262329102,
-    0.9565024375915527,
-    3.642192840576172,
-    0.2728121876716614,
-    1.213478684425354,
-    0.9753812551498413,
-    0.8873591423034668,
-    0.33358457684516907,
-    1.3659933805465698,
-    0.8882648348808289,
-    2.5123517513275146,
-    2.140702486038208,
-    0.5057026147842407,
-    0.6444696187973022,
-    6.393070697784424,
-    5.2834672927856445,
-    0.5591452121734619,
-    0.7461310625076294,
-    1.291377305984497,
-    5.8839192390441895,
-    0.5367920994758606,
-    0.5613504648208618,
-    3.917616367340088,
-    1.711554765701294,
-    1.1463897228240967,
-    1.213138222694397,
-    4.389374256134033,
-    2.6740972995758057,
-    1.8884544372558594,
-    0.24773640930652618,
-    1.180746078491211,
-    1.5737982988357544,
-    0.35344523191452026,
-    6.724660396575928,
-    4.691379547119141,
-    0.13997238874435425,
-    2.721850872039795,
-    0.8484674692153931,
-    0.4288233816623688,
-    2.683147430419922,
-    5.770069599151611,
-    0.6529362797737122,
-    1.2653805017471313,
-    3.627917528152466,
-    0.3779342770576477,
-    2.5047249794006348,
-    0.5781755447387695
-  ],
-  "lerStats": [
-    0.12833872437477112,
-    0.13121213018894196,
-    0.009294872172176838,
-    0.003999999724328518,
-    0.009401709772646427,
-    0.004081632476300001,
-    0.023916667327284813,
-    0.04583333432674408,
-    0.0024096383713185787,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.01096837967634201,
-    0.0469696968793869,
-    0.0,
-    0.041764117777347565,
-    0.01666666753590107,
-    0.0,
-    0.002816901309415698,
-    0.0,
-    0.012500000186264515,
-    0.02500000037252903
-  ],
-  "dtStats": [
-    0.047027587890625,
-    0.05345463752746582,
-    0.054227590560913086,
-    0.047933340072631836,
-    0.05049538612365723,
-    0.047612905502319336,
-    0.04902148246765137,
-    0.05226325988769531,
-    0.048230648040771484,
-    0.05154848098754883,
-    0.05096936225891113,
-    0.051076412200927734,
-    0.053766727447509766,
-    0.049126386642456055,
-    0.054618120193481445,
-    0.0370335578918457,
-    0.05075526237487793,
-    0.055355072021484375,
-    0.05798745155334473,
-    0.04855227470397949,
-    0.0493311882019043,
-    0.05694866180419922,
-    0.04590892791748047,
-    0.0556941032409668,
-    0.0576629638671875,
-    0.05844473838806152,
-    0.06255292892456055,
-    0.058562517166137695,
-    0.05763673782348633,
-    0.04991626739501953,
-    0.04365229606628418,
-    0.035303592681884766,
-    0.0514528751373291,
-    0.05336570739746094,
-    0.04681086540222168,
-    0.04394721984863281,
-    0.05447959899902344,
-    0.05127978324890137,
-    0.049028635025024414,
-    0.04995608329772949,
-    0.05930781364440918,
-    0.03564333915710449,
-    0.04483389854431152,
-    0.051774024963378906,
-    0.04709672927856445,
-    0.04615950584411621,
-    0.03964972496032715,
-    0.05635809898376465,
-    0.0501551628112793,
-    0.0485377311706543,
-    0.04639792442321777,
-    0.04334592819213867,
-    0.053888559341430664,
-    0.04725527763366699,
-    0.05387473106384277,
-    0.04843497276306152,
-    0.05303239822387695,
-    0.06216549873352051,
-    0.05761313438415527,
-    0.051302433013916016,
-    0.047971487045288086,
-    0.045247793197631836,
-    0.04102206230163574,
-    0.049944400787353516,
-    0.057641029357910156,
-    0.04803633689880371,
-    0.03907155990600586,
-    0.05106782913208008,
-    0.04871821403503418,
-    0.048981428146362305,
-    0.04125261306762695,
-    0.05164790153503418,
-    0.05247044563293457,
-    0.04599142074584961,
-    0.04468512535095215,
-    0.05797624588012695,
-    0.057065486907958984,
-    0.05350303649902344,
-    0.0448606014251709,
-    0.056897878646850586,
-    0.0474095344543457,
-    0.053037405014038086,
-    0.04289603233337402,
-    0.033689260482788086,
-    0.05836153030395508,
-    0.04864501953125,
-    0.040651798248291016,
-    0.0517120361328125,
-    0.04471158981323242,
-    0.05434417724609375,
-    0.049828529357910156,
-    0.052063941955566406,
-    0.04977917671203613,
-    0.055037498474121094,
-    0.040048837661743164,
-    0.049131155014038086,
-    0.05309486389160156,
-    0.049051523208618164,
-    0.04621100425720215,
-    0.0504755973815918
-  ],
-  "totalTime": 1663.4212646484375,
-  "earlyStoppingFrequency": -1.0,
-  "earlyStoppingNbest": 5,
-  "earlyStoppingBestModelPrefix": "2",
-  "earlyStoppingBestAccuracy": 0.9829212427139282,
-  "earlyStoppingBestCurNbest": 1,
-  "earlyStoppingBestAtIter": 23625,
-  "earlyStoppingBestModelOutputDir": "/home/ls6/wick/calamari_experiments/tf2/antiqua_historical",
-  "outputModelPrefix": "model_",
-  "dataAugRetrainOnOriginal": true,
-  "version": 2
+  "version": 5
 }

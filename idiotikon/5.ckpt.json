@@ -1,654 +1,530 @@
 {
-  "model": {
-    "network": {
+  "scenario": {
+    "debug_graph_n_examples": 1,
+    "print_eval_limit": 10,
+    "tensorboard_logger_history_size": 5,
+    "export_serve": true,
+    "model": {
       "layers": [
         {
+          "name": "conv2d_0",
           "filters": 40,
-          "kernelSize": {
+          "kernel_size": {
             "x": 3,
-            "y": 3
+            "y": 3,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
+          "strides": {
             "x": 1,
-            "y": 1
-          }
-        },
-        {
-          "type": "MAX_POOLING",
-          "kernelSize": {
-            "x": 2,
-            "y": 2
+            "y": 1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
-            "x": 2,
-            "y": 2
-          }
+          "padding": "same",
+          "activation": "relu",
+          "__cls__": "calamari_ocr.ocr.model.layers.conv2d:Conv2DLayerParams"
         },
         {
+          "name": "maxpool2d_0",
+          "pool_size": {
+            "x": 2,
+            "y": 2,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "strides": {
+            "x": -1,
+            "y": -1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "padding": "same",
+          "__cls__": "calamari_ocr.ocr.model.layers.pool2d:MaxPool2DLayerParams"
+        },
+        {
+          "name": "conv2d_1",
           "filters": 60,
-          "kernelSize": {
+          "kernel_size": {
             "x": 3,
-            "y": 3
+            "y": 3,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
+          "strides": {
             "x": 1,
-            "y": 1
-          }
-        },
-        {
-          "type": "MAX_POOLING",
-          "kernelSize": {
-            "x": 2,
-            "y": 2
+            "y": 1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
           },
-          "stride": {
-            "x": 2,
-            "y": 2
-          }
+          "padding": "same",
+          "activation": "relu",
+          "__cls__": "calamari_ocr.ocr.model.layers.conv2d:Conv2DLayerParams"
         },
         {
-          "type": "LSTM",
-          "hiddenNodes": 200
+          "name": "maxpool2d_1",
+          "pool_size": {
+            "x": 2,
+            "y": 2,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "strides": {
+            "x": -1,
+            "y": -1,
+            "__cls__": "calamari_ocr.ocr.model.layers.layer:IntVec2D"
+          },
+          "padding": "same",
+          "__cls__": "calamari_ocr.ocr.model.layers.pool2d:MaxPool2DLayerParams"
+        },
+        {
+          "name": "lstm_0",
+          "hidden_nodes": 200,
+          "merge_mode": "concat",
+          "__cls__": "calamari_ocr.ocr.model.layers.bilstm:BiLSTMLayerParams"
+        },
+        {
+          "name": "dropout_0",
+          "rate": 0.5,
+          "__cls__": "calamari_ocr.ocr.model.layers.dropout:DropoutLayerParams"
         }
       ],
-      "solver": "ADAM_SOLVER",
-      "dropout": 0.5,
-      "features": 48,
       "classes": 153,
-      "backend": {
-        "cudnn": true,
-        "randomSeed": 5,
-        "shuffleBufferSize": 1000
+      "ctc_merge_repeated": true,
+      "ensemble": 0,
+      "masking_mode": false,
+      "__cls__": "calamari_ocr.ocr.model.params:ModelParams"
+    },
+    "data": {
+      "pre_proc": {
+        "run_parallel": true,
+        "num_threads": -1,
+        "max_tasks_per_process": 250,
+        "processors": [
+          {
+            "modes": [
+              "prediction",
+              "evaluation",
+              "training"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.data_range_normalizer:DataRangeProcessorParams"
+          },
+          {
+            "modes": [
+              "prediction",
+              "evaluation",
+              "training"
+            ],
+            "extra_params": [
+              4,
+              1.0,
+              0.3
+            ],
+            "line_height": 48,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.center_normalizer:CenterNormalizerProcessorParams"
+          },
+          {
+            "modes": [
+              "prediction",
+              "evaluation",
+              "training"
+            ],
+            "normalize": true,
+            "invert": true,
+            "transpose": true,
+            "pad": 16,
+            "pad_value": false,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.final_preparation:FinalPreparationProcessorParams"
+          },
+          {
+            "modes": [
+              "training"
+            ],
+            "augmenter": {
+              "__cls__": "calamari_ocr.ocr.augmentation.data_augmenter:DefaultDataAugmenterParams"
+            },
+            "n_augmentations": 0,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.augmentation:AugmentationProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "evaluation",
+              "targets"
+            ],
+            "unicode_normalization": "NFD",
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_normalizer:TextNormalizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "evaluation",
+              "targets"
+            ],
+            "replacements": [
+              {
+                "old": "\u00b9",
+                "new": "1",
+                "regex": false
+              },
+              {
+                "old": "\u00b2",
+                "new": "2",
+                "regex": false
+              },
+              {
+                "old": "\u00b3",
+                "new": "3",
+                "regex": false
+              },
+              {
+                "old": "\\s+(?u)",
+                "new": " ",
+                "regex": true
+              },
+              {
+                "old": "\\n(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "^\\s+(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "\\s+$(?u)",
+                "new": "",
+                "regex": true
+              }
+            ],
+            "rulesets": [
+              "spaces"
+            ],
+            "rulegroups": [],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_regularizer:TextRegularizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "evaluation",
+              "targets"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.basic_text_processors:StripTextProcessorParams"
+          },
+          {
+            "modes": [
+              "prediction",
+              "evaluation",
+              "training"
+            ],
+            "max_line_width": 4096,
+            "__cls__": "calamari_ocr.ocr.dataset.imageprocessors.preparesample:PrepareSampleProcessorParams"
+          }
+        ],
+        "__cls__": "tfaip.data.pipeline.processor.params:SequentialProcessorPipelineParams"
       },
-      "ctcMergeRepeated": true,
-      "learningRate": 0.0010000000474974513,
-      "clippingNorm": 5.0
+      "post_proc": {
+        "run_parallel": true,
+        "num_threads": -1,
+        "max_tasks_per_process": 250,
+        "processors": [
+          {
+            "modes": [
+              "training",
+              "prediction",
+              "evaluation",
+              "targets"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.postprocessors.reshape:ReshapeOutputsProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "prediction",
+              "evaluation",
+              "targets"
+            ],
+            "ctc_decoder_params": {
+              "type": "default",
+              "blank_index": 0,
+              "min_p_threshold": 0,
+              "non_word_chars": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "[",
+                "]",
+                "(",
+                ")",
+                "_",
+                ".",
+                ":",
+                ";",
+                "!",
+                "?",
+                "{",
+                "}",
+                "-",
+                "'",
+                "\""
+              ],
+              "dictionary": [],
+              "word_separator": " ",
+              "__cls__": "calamari_ocr.ocr.model.ctcdecoder.ctc_decoder:CTCDecoderParams"
+            },
+            "__cls__": "calamari_ocr.ocr.dataset.postprocessors.ctcdecoder:CTCDecoderProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "evaluation",
+              "targets"
+            ],
+            "unicode_normalization": "NFD",
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_normalizer:TextNormalizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "evaluation",
+              "targets"
+            ],
+            "replacements": [
+              {
+                "old": "\u00b9",
+                "new": "1",
+                "regex": false
+              },
+              {
+                "old": "\u00b2",
+                "new": "2",
+                "regex": false
+              },
+              {
+                "old": "\u00b3",
+                "new": "3",
+                "regex": false
+              },
+              {
+                "old": "\\s+(?u)",
+                "new": " ",
+                "regex": true
+              },
+              {
+                "old": "\\n(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "^\\s+(?u)",
+                "new": "",
+                "regex": true
+              },
+              {
+                "old": "\\s+$(?u)",
+                "new": "",
+                "regex": true
+              }
+            ],
+            "rulesets": [
+              "spaces"
+            ],
+            "rulegroups": [],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.text_regularizer:TextRegularizerProcessorParams"
+          },
+          {
+            "modes": [
+              "training",
+              "evaluation",
+              "targets"
+            ],
+            "__cls__": "calamari_ocr.ocr.dataset.textprocessors.basic_text_processors:StripTextProcessorParams"
+          }
+        ],
+        "__cls__": "tfaip.data.pipeline.processor.params:SequentialProcessorPipelineParams"
+      },
+      "resource_base_path": ".",
+      "skip_invalid_gt": true,
+      "input_channels": 1,
+      "downscale_factor": 4,
+      "line_height": 48,
+      "ensemble": 0,
+      "codec": {
+        "charset": [
+          "",
+          " ",
+          "!",
+          "'",
+          "(",
+          ")",
+          "+",
+          ",",
+          "-",
+          ".",
+          "/",
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          ":",
+          ";",
+          "<",
+          "=",
+          ">",
+          "?",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N",
+          "O",
+          "P",
+          "Q",
+          "R",
+          "S",
+          "T",
+          "U",
+          "V",
+          "W",
+          "X",
+          "Z",
+          "[",
+          "]",
+          "`",
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n",
+          "o",
+          "p",
+          "q",
+          "r",
+          "s",
+          "t",
+          "u",
+          "v",
+          "w",
+          "x",
+          "y",
+          "z",
+          "*",
+          "_",
+          "|",
+          "\u00a7",
+          "\u00af",
+          "\u00b4",
+          "\u00bd",
+          "\u00c6",
+          "\u00df",
+          "\u00e6",
+          "\u0131",
+          "\u014b",
+          "\u0153",
+          "\u0259",
+          "\u028b",
+          "\u02d8",
+          "\u0300",
+          "\u0301",
+          "\u0302",
+          "\u0303",
+          "\u0304",
+          "\u0305",
+          "\u0306",
+          "\u0308",
+          "\u030c",
+          "\u0313",
+          "\u0314",
+          "\u0320",
+          "\u0323",
+          "\u0327",
+          "\u0328",
+          "\u032d",
+          "\u032e",
+          "\u0331",
+          "\u0342",
+          "\u0345",
+          "\u03b1",
+          "\u03b2",
+          "\u03b3",
+          "\u03b4",
+          "\u03b5",
+          "\u03b6",
+          "\u03b7",
+          "\u03b8",
+          "\u03b9",
+          "\u03bb",
+          "\u03bc",
+          "\u03bd",
+          "\u03be",
+          "\u03bf",
+          "\u03c0",
+          "\u03c1",
+          "\u03c2",
+          "\u03c3",
+          "\u03c4",
+          "\u03c5",
+          "\u03c7",
+          "\u03c9",
+          "\u03f0",
+          "\u03f1",
+          "\u05d0",
+          "\u2014",
+          "\u2018",
+          "\u201a",
+          "\u201c",
+          "\u201e",
+          "\u2020",
+          "\u2039",
+          "\u203a",
+          "\u2114",
+          "\uab34",
+          "\uab3a"
+        ],
+        "__cls__": "calamari_ocr.ocr.dataset.codec:Codec"
+      },
+      "__cls__": "calamari_ocr.ocr.dataset.params:DataParams"
     },
-    "lineHeight": 48,
-    "dataPreprocessor": {
-      "type": "MULTI_NORMALIZER",
-      "children": [
-        {
-          "lineHeight": 48,
-          "pad": 16
-        }
-      ]
+    "evaluator": {
+      "__cls__": "tfaip.evaluator.params:EvaluatorParams"
     },
-    "textPreprocessor": {
-      "type": "MULTI_NORMALIZER",
-      "children": [
-        {
-          "type": "TEXT_NORMALIZER",
-          "unicodeNormalization": "NFD"
-        },
-        {
-          "type": "TEXT_REGULARIZER",
-          "replacements": [
-            {
-              "old": "\u00b9",
-              "new": "1"
-            },
-            {
-              "old": "\u00b2",
-              "new": "2"
-            },
-            {
-              "old": "\u00b3",
-              "new": "3"
-            },
-            {
-              "old": "\\s+(?u)",
-              "new": " ",
-              "regex": true
-            },
-            {
-              "old": "\\n(?u)",
-              "regex": true
-            },
-            {
-              "old": "^\\s+(?u)",
-              "regex": true
-            },
-            {
-              "old": "\\s+$(?u)",
-              "regex": true
-            }
-          ]
-        },
-        {
-          "type": "STRIP_NORMALIZER"
-        }
-      ]
-    },
-    "textPostprocessor": {
-      "type": "MULTI_NORMALIZER",
-      "children": [
-        {
-          "type": "TEXT_NORMALIZER",
-          "unicodeNormalization": "NFD"
-        },
-        {
-          "type": "TEXT_REGULARIZER",
-          "replacements": [
-            {
-              "old": "\u00b9",
-              "new": "1"
-            },
-            {
-              "old": "\u00b2",
-              "new": "2"
-            },
-            {
-              "old": "\u00b3",
-              "new": "3"
-            },
-            {
-              "old": "\\s+(?u)",
-              "new": " ",
-              "regex": true
-            },
-            {
-              "old": "\\n(?u)",
-              "regex": true
-            },
-            {
-              "old": "^\\s+(?u)",
-              "regex": true
-            },
-            {
-              "old": "\\s+$(?u)",
-              "regex": true
-            }
-          ]
-        },
-        {
-          "type": "STRIP_NORMALIZER"
-        }
-      ]
-    },
-    "codec": {
-      "charset": [
-        "",
-        " ",
-        "!",
-        "'",
-        "(",
-        ")",
-        "+",
-        ",",
-        "-",
-        ".",
-        "/",
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        ":",
-        ";",
-        "<",
-        "=",
-        ">",
-        "?",
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Z",
-        "[",
-        "]",
-        "`",
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "*",
-        "_",
-        "|",
-        "\u00a7",
-        "\u00af",
-        "\u00b4",
-        "\u00bd",
-        "\u00c6",
-        "\u00df",
-        "\u00e6",
-        "\u0131",
-        "\u014b",
-        "\u0153",
-        "\u0259",
-        "\u028b",
-        "\u02d8",
-        "\u0300",
-        "\u0301",
-        "\u0302",
-        "\u0303",
-        "\u0304",
-        "\u0305",
-        "\u0306",
-        "\u0308",
-        "\u030c",
-        "\u0313",
-        "\u0314",
-        "\u0320",
-        "\u0323",
-        "\u0327",
-        "\u0328",
-        "\u032d",
-        "\u032e",
-        "\u0331",
-        "\u0342",
-        "\u0345",
-        "\u03b1",
-        "\u03b2",
-        "\u03b3",
-        "\u03b4",
-        "\u03b5",
-        "\u03b6",
-        "\u03b7",
-        "\u03b8",
-        "\u03b9",
-        "\u03bb",
-        "\u03bc",
-        "\u03bd",
-        "\u03be",
-        "\u03bf",
-        "\u03c0",
-        "\u03c1",
-        "\u03c2",
-        "\u03c3",
-        "\u03c4",
-        "\u03c5",
-        "\u03c7",
-        "\u03c9",
-        "\u03f0",
-        "\u03f1",
-        "\u05d0",
-        "\u2014",
-        "\u2018",
-        "\u201a",
-        "\u201c",
-        "\u201e",
-        "\u2020",
-        "\u2039",
-        "\u203a",
-        "\u2114",
-        "\uab34",
-        "\uab3a"
-      ]
-    }
+    "export_net_config": true,
+    "net_config_filename": "net_config.json",
+    "default_serve_dir": "serve",
+    "additional_serve_dir": "additional",
+    "trainer_params_filename": "trainer_params.json",
+    "scenario_params_filename": "scenario_params.json",
+    "scenario_base_path": null,
+    "scenario_id": null,
+    "id": null,
+    "tfaip_commit_hash": "7aff835269ee4614971cc751cdb47c00444f9af5",
+    "tfaip_version": "1.2.5",
+    "__cls__": "calamari_ocr.ocr.scenario_params:CalamariScenarioParams"
   },
-  "processes": 4,
-  "maxIters": 1000000,
-  "skipInvalidGt": true,
-  "display": 100.0,
-  "statsSize": 100,
-  "batchSize": 5,
-  "checkpointFrequency": 10000.0,
-  "outputDir": "/home/ls6/reul/temp/idiot_ocr_prod/fold_5",
-  "iter": 19999,
-  "lossStats": [
-    0.17554856836795807,
-    0.010374252684414387,
-    0.004688461776822805,
-    0.002750321524217725,
-    0.01049111969769001,
-    0.0115989800542593,
-    0.008305681869387627,
-    2.104525089263916,
-    0.004676988814026117,
-    0.0038243501912802458,
-    0.04652334377169609,
-    0.3365984261035919,
-    0.004847745876759291,
-    0.054929494857788086,
-    0.005590067710727453,
-    0.0036691781133413315,
-    0.03995484858751297,
-    0.01117237564176321,
-    0.01197773963212967,
-    0.0077147348783910275,
-    0.009027428925037384,
-    0.006155216135084629,
-    0.006298906169831753,
-    0.02080518752336502,
-    0.004277502186596394,
-    0.061090849339962006,
-    0.008357169106602669,
-    0.08376616984605789,
-    0.04790989309549332,
-    0.00432909931987524,
-    0.0029612486250698566,
-    0.06432707607746124,
-    0.01178144384175539,
-    0.08507619053125381,
-    0.006331446580588818,
-    0.005436871200799942,
-    0.006261554546654224,
-    0.3015051484107971,
-    0.011959029361605644,
-    0.0035420372150838375,
-    0.010913321748375893,
-    0.0045867664739489555,
-    0.003479453967884183,
-    0.021116599440574646,
-    0.03877083212137222,
-    0.008446091786026955,
-    0.09752056002616882,
-    0.036730632185935974,
-    0.023102324455976486,
-    0.4116823077201843,
-    0.0037528411485254765,
-    0.012923693284392357,
-    0.3802828788757324,
-    0.004125355742871761,
-    0.005389340687543154,
-    0.03429538384079933,
-    0.07774820923805237,
-    0.004546099342405796,
-    0.09281758964061737,
-    0.005439598113298416,
-    0.005589486099779606,
-    0.06331755220890045,
-    0.0037713882047683,
-    0.004937435500323772,
-    0.007669664919376373,
-    0.004227337893098593,
-    0.024691428989171982,
-    0.010834893211722374,
-    0.01766086556017399,
-    0.1405048966407776,
-    0.010200153104960918,
-    0.0034285415895283222,
-    0.0026681553572416306,
-    0.0061376700177788734,
-    0.0058559849858284,
-    0.22700242698192596,
-    0.006037288811057806,
-    0.007203024812042713,
-    0.007672733627259731,
-    0.00704619288444519,
-    0.048223476856946945,
-    0.13960230350494385,
-    0.00414446834474802,
-    0.007983583025634289,
-    0.0039064111188054085,
-    0.3095502257347107,
-    0.00414811447262764,
-    0.030174095183610916,
-    0.0042749494314193726,
-    0.009893428534269333,
-    3.2212586402893066,
-    0.0046608024276793,
-    0.19560080766677856,
-    0.009417420253157616,
-    0.033183932304382324,
-    0.011048953048884869,
-    0.305244117975235,
-    0.17621488869190216,
-    0.003940006252378225,
-    0.03904407098889351
-  ],
-  "lerStats": [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.003508772002533078,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0033333334140479565,
-    0.0,
-    0.0,
-    0.0,
-    0.004081632476300001,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0
-  ],
-  "dtStats": [
-    0.4360501766204834,
-    17.382408142089844,
-    0.04779958724975586,
-    0.03876471519470215,
-    0.041710615158081055,
-    0.04377317428588867,
-    0.03774881362915039,
-    0.035439491271972656,
-    0.04061174392700195,
-    0.038066864013671875,
-    0.03588104248046875,
-    0.039183855056762695,
-    0.07910704612731934,
-    0.0768129825592041,
-    0.08214950561523438,
-    0.09598755836486816,
-    0.08362841606140137,
-    0.09080910682678223,
-    0.0696408748626709,
-    0.05872035026550293,
-    0.08191037178039551,
-    0.07980728149414062,
-    0.06515884399414062,
-    0.1113286018371582,
-    0.08196544647216797,
-    0.08751416206359863,
-    0.06771397590637207,
-    0.08746910095214844,
-    0.09214043617248535,
-    0.06448173522949219,
-    0.09697675704956055,
-    0.08264684677124023,
-    0.10430383682250977,
-    0.0971834659576416,
-    0.07608199119567871,
-    0.08341193199157715,
-    0.09836387634277344,
-    0.08217096328735352,
-    0.07442998886108398,
-    0.08782792091369629,
-    0.06573319435119629,
-    0.09326052665710449,
-    0.08165287971496582,
-    0.07973289489746094,
-    0.09808802604675293,
-    0.06947588920593262,
-    0.08015751838684082,
-    0.07362747192382812,
-    0.08456897735595703,
-    0.06519865989685059,
-    0.1115117073059082,
-    0.09632468223571777,
-    0.05930495262145996,
-    0.1006155014038086,
-    0.0741124153137207,
-    0.08318924903869629,
-    0.0837409496307373,
-    0.08872151374816895,
-    0.07509613037109375,
-    0.08649396896362305,
-    0.08567237854003906,
-    0.07078409194946289,
-    0.07146668434143066,
-    0.09071230888366699,
-    0.1087191104888916,
-    0.0730898380279541,
-    0.10184192657470703,
-    0.0576784610748291,
-    0.11059713363647461,
-    0.08080744743347168,
-    0.08541393280029297,
-    0.07533454895019531,
-    0.0756678581237793,
-    0.10559797286987305,
-    0.10058951377868652,
-    0.07602500915527344,
-    0.06949806213378906,
-    0.09739160537719727,
-    0.0688328742980957,
-    0.09676814079284668,
-    0.10065460205078125,
-    0.06615614891052246,
-    0.08743619918823242,
-    0.0939486026763916,
-    0.08636188507080078,
-    0.07444953918457031,
-    0.07368016242980957,
-    0.10012650489807129,
-    0.06574606895446777,
-    0.10743093490600586,
-    0.06929969787597656,
-    0.1217491626739502,
-    0.0795431137084961,
-    0.05708789825439453,
-    0.06526827812194824,
-    0.11984944343566895,
-    0.07623744010925293,
-    0.09358048439025879,
-    0.08873820304870605,
-    0.09060120582580566
-  ],
-  "totalTime": 6984.2255859375,
-  "earlyStoppingFrequency": 10000.0,
-  "earlyStoppingNbest": 5,
-  "earlyStoppingBestModelPrefix": "5",
-  "earlyStoppingBestAccuracy": 0.9989347457885742,
-  "earlyStoppingBestCurNbest": 1,
-  "earlyStoppingBestAtIter": 20000,
-  "earlyStoppingBestModelOutputDir": "/scratch/Datensets_Bildverarbeitung/OCR/idiotikon/models/ocr/prod",
-  "outputModelPrefix": "model_",
-  "dataAugRetrainOnOriginal": true,
-  "currentStage": 1,
-  "version": 2
+  "version": 5
 }
