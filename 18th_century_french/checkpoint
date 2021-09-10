@@ -1,2 +1,0 @@
-model_checkpoint_path: "/scratch/zpd/tmp/models/bin/2.ckpt"
-all_model_checkpoint_paths: "/scratch/zpd/tmp/models/bin/2.ckpt"
