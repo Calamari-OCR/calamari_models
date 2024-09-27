@@ -984,5 +984,5 @@
     "tfaip_version": "1.2.5",
     "__cls__": "calamari_ocr.ocr.scenario_params:CalamariScenarioParams"
   },
-  "version": 5
+  "version": 6
 }
