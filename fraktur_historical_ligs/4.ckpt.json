@@ -156,22 +156,22 @@
             ],
             "replacements": [
               {
-                "old": "\\s+(?u)",
+                "old": "(?u)\\s+",
                 "new": " ",
                 "regex": true
               },
               {
-                "old": "\\n(?u)",
+                "old": "(?u)\\n",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "^\\s+(?u)",
+                "old": "(?u)^\\s+",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "\\s+$(?u)",
+                "old": "(?u)\\s+$",
                 "new": "",
                 "regex": true
               }
@@ -277,22 +277,22 @@
             ],
             "replacements": [
               {
-                "old": "\\s+(?u)",
+                "old": "(?u)\\s+",
                 "new": " ",
                 "regex": true
               },
               {
-                "old": "\\n(?u)",
+                "old": "(?u)\\n",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "^\\s+(?u)",
+                "old": "(?u)^\\s+",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "\\s+$(?u)",
+                "old": "(?u)\\s+$",
                 "new": "",
                 "regex": true
               }

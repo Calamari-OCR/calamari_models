@@ -411,22 +411,22 @@
                 "regex": false
               },
               {
-                "old": "\\s+(?u)",
+                "old": "(?u)\\s+",
                 "new": " ",
                 "regex": true
               },
               {
-                "old": "\\n(?u)",
+                "old": "(?u)\\n",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "^\\s+(?u)",
+                "old": "(?u)^\\s+",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "\\s+$(?u)",
+                "old": "(?u)\\s+$",
                 "new": "",
                 "regex": true
               }
@@ -787,22 +787,22 @@
                 "regex": false
               },
               {
-                "old": "\\s+(?u)",
+                "old": "(?u)\\s+",
                 "new": " ",
                 "regex": true
               },
               {
-                "old": "\\n(?u)",
+                "old": "(?u)\\n",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "^\\s+(?u)",
+                "old": "(?u)^\\s+",
                 "new": "",
                 "regex": true
               },
               {
-                "old": "\\s+$(?u)",
+                "old": "(?u)\\s+$",
                 "new": "",
                 "regex": true
               }
